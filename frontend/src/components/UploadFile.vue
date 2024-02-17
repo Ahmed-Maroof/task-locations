@@ -30,7 +30,7 @@ export default {
       formData.append('file', this.file);
 
       // Send file to backend endpoint using Axios
-      axios.post('http://localhost:3000/api/upload', formData)
+      axios.post('http://localhost:3000/api/images/upload', formData)
           .then(response => {
             // Handle success
             console.log('File uploaded successfully:', response.data);

@@ -44,14 +44,18 @@ export default {
 
         marker.addListener('click', () => {
           // Fetch the image URL from your endpoint
-          axios.get(`http://localhost:3000/api/images/uploads/${location.id}`)
+          console.log(location)
+          axios.get(`http://localhost:3000/api/images/${location.image_path}`,{ responseType: 'arraybuffer' })
               .then(response => {
-                const imageUrl = response.data.imageUrl;
-                console.log(imageUrl);
-                infoWindow.setContent(`
+                const contentType = response.headers['content-type']; // Get the Content-Type header
+                const arrayBuffer = response.data;
+                const base64Image = arrayBufferToBase64(arrayBuffer);
+                const imageContent = `data:${contentType};base64,${base64Image}`;
+
+                 infoWindow.setContent(`
             <div>
               <h2>${location.title}</h2>
-              <img src="${imageUrl}" alt="${location.title}" style="max-width: 200px;">
+              <img src="${imageContent}" alt="${location.title}" style="max-width: 200px;">
             </div>
           `);
                 infoWindow.open(map, marker);
@@ -62,6 +66,17 @@ export default {
         });
 
       });
+
+      // Function to convert ArrayBuffer to Base64-encoded string
+      function arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+      }
     }
   }
 };
