@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <h1>All Locations</h1>
     <div ref="map" class="google-map"></div>
   </div>
@@ -33,10 +33,10 @@ export default {
         center: { lat: 30.04141788125259, lng: 31.235875779491078 }, // Centered around Egypt
         zoom: 9 // Adjust the zoom level as needed
       });
-      console.log( locations);
+
       locations.forEach(location => {
         const marker = new google.maps.Marker({
-         position: {lat: parseFloat(location.latitude), lng: parseFloat(location.longitude)},
+          position: { lat: parseFloat(location.latitude), lng: parseFloat(location.longitude) },
           map: map,
           title: location.title
         });
@@ -44,27 +44,25 @@ export default {
 
         marker.addListener('click', () => {
           // Fetch the image URL from your endpoint
-          console.log(location)
-          axios.get(`http://localhost:3000/api/images/${location.image_path}`,{ responseType: 'arraybuffer' })
+          axios.get(`http://localhost:3000/api/images/${location.image_path}`, { responseType: 'arraybuffer' })
               .then(response => {
                 const contentType = response.headers['content-type']; // Get the Content-Type header
                 const arrayBuffer = response.data;
                 const base64Image = arrayBufferToBase64(arrayBuffer);
                 const imageContent = `data:${contentType};base64,${base64Image}`;
 
-                 infoWindow.setContent(`
-            <div>
-              <h2>${location.title}</h2>
-              <img src="${imageContent}" alt="${location.title}" style="max-width: 200px;">
-            </div>
-          `);
+                infoWindow.setContent(`
+                <div>
+                  <h2>${location.title}</h2>
+                  <img src="${imageContent}" alt="${location.title}" style="max-width: 100%;">
+                </div>
+              `);
                 infoWindow.open(map, marker);
               })
               .catch(error => {
                 console.error('Error fetching image:', error);
               });
         });
-
       });
 
       // Function to convert ArrayBuffer to Base64-encoded string
@@ -84,6 +82,7 @@ export default {
 
 <style scoped>
 .google-map {
+  width: 100%; /* Set the width to fill the column */
   height: 500px;
 }
 </style>

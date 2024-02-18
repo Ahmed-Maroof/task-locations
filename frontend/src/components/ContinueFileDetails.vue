@@ -9,10 +9,12 @@
       <div class="form-group">
         <label class="form-label">Select Location on Map</label>
         <div class="google-map-container">
-          <google-map-picker @location-selected="updateCoordinates" />
+          <google-map-picker @location-selected="updateCoordinates"/>
         </div>
       </div>
       <button type="submit" class="btn btn-primary submit-button">Submit</button>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
     </form>
   </div>
 </template>
@@ -29,18 +31,20 @@ export default {
     return {
       title: '',
       latitude: '',
-      longitude: ''
+      longitude: '',
+      errorMessage: ''
     };
   },
   methods: {
     updateCoordinates(coordinates) {
       this.latitude = coordinates.latitude;
       this.longitude = coordinates.longitude;
+      this.errorMessage = '';
     },
     submitForm() {
       // Check if both title and coordinates are provided
       if (!this.title.trim() || !this.latitude || !this.longitude) {
-        alert('Please provide a title and select a location on the map.');
+        this.errorMessage = 'Please provide a title and select a location on the map.';
         return;
       }
 
@@ -61,14 +65,13 @@ export default {
             this.latitude = '';
             this.longitude = '';
             // Optionally, you can redirect the user or show a success message
-            alert('Location created successfully!');
             this.$router.push('/all-locations')
           })
           .catch(error => {
             // Handle error response
             console.error('Error creating location:', error);
             // Optionally, you can show an error message to the user
-            alert('An error occurred while creating the location. Please try again later.');
+            this.errorMessage = 'An error occurred while creating the location. Please try again later.'
           });
     }
   }
@@ -115,6 +118,7 @@ export default {
   height: 300px; /* or any desired height */
   width: 100%;
 }
+
 .submit-button {
   width: 100%;
   padding: 0.5rem 1rem;
@@ -128,5 +132,10 @@ export default {
 
 .submit-button:hover {
   background-color: #0056b3;
+}
+
+.error-message {
+  color: red; /* Set error message color to red */
+  margin-top: 5px; /* Add some spacing */
 }
 </style>
